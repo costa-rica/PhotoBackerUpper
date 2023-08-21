@@ -5,7 +5,7 @@
 //  Created by Nick Rodriguez on 17/08/2023.
 //
 
-import Foundation
+import UIKit
 
 class User:Codable {
     var id: String?
@@ -56,5 +56,17 @@ class Directory:Codable {
     private enum DirectoryCodingKeys: String, CodingKey {
         case id, display_name, display_name_no_spaces, public_status, member, permission_view, permission_delete, permission_add_to_dir,  permission_admin
     }
+    
+}
+
+class ImageBackUp{
+    var name:String!
+    var uiimage:UIImage?
+    var url: URL?
+    var directory:Directory?
+}
+
+
+class BackUpImageRow: UITableViewCell{
     
 }

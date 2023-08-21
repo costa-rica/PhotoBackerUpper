@@ -24,11 +24,15 @@ class HomeVC: UIViewController {
     
     let safeAreaTopAdjustment = 40.0
     
-    private var scrllVwHome=UIScrollView()
+//    private var scrllVwHome=UIScrollView()
     private var stckVwHome=UIStackView()
     let btnToLogin = UIButton()
     let btnToRegister = UIButton()
     var arryEnvironment=APIBase.allCases
+    
+    var stckVwApi = UIStackView()
+    var lblCheckApi = UILabel()
+    var btnCheckApi = UIButton()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,8 +41,6 @@ class HomeVC: UIViewController {
         userStore.requestStore = requestStore
         directoryStore = DirectoryStore()
         directoryStore.requestStore = requestStore
-        
-        requestStore.apiBase = APIBase.local
 
         setup_vwVCTop()
         setup_vwVCTopTitle()
@@ -52,6 +54,11 @@ class HomeVC: UIViewController {
 //            let names = UIFont.fontNames(forFamilyName: family)
 //            print("Family: \(family) Font names: \(names)")
 //        }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        print("- viewDidLayoutSubviews")
+//        sizeOfStuff()
     }
 
     func setup_vwVCTop(){
@@ -99,112 +106,53 @@ class HomeVC: UIViewController {
     
     func setup_stckVwHome(){
         print("- setup_stckVwHome")
-        scrllVwHome.translatesAutoresizingMaskIntoConstraints=false
-        view.addSubview(scrllVwHome)
-        scrllVwHome.accessibilityIdentifier="scrllVwHome"
-        
-        scrllVwHome.topAnchor.constraint(equalTo:vwVCTopTitle.bottomAnchor, constant: heightFromPct(percent: cardTopSpacing)).isActive=true
-        scrllVwHome.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: widthFromPct(percent: cardInteriorPadding)).isActive=true
-        scrllVwHome.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: widthFromPct(percent: cardInteriorPadding * -1)).isActive=true
-//        scrllVwAdmin.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive=true
-        scrllVwHome.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: heightFromPct(percent: -10)).isActive=true
+//        scrllVwHome.translatesAutoresizingMaskIntoConstraints=false
+//        view.addSubview(scrllVwHome)
+//        scrllVwHome.accessibilityIdentifier="scrllVwHome"
+//
+//        scrllVwHome.topAnchor.constraint(equalTo:vwVCTopTitle.bottomAnchor, constant: heightFromPct(percent: cardTopSpacing)).isActive=true
+//        scrllVwHome.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: widthFromPct(percent: cardInteriorPadding)).isActive=true
+//        scrllVwHome.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: widthFromPct(percent: cardInteriorPadding * -1)).isActive=true
+////        scrllVwAdmin.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive=true
+//        scrllVwHome.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: heightFromPct(percent: -10)).isActive=true
+////        scrllVwHome.backgroundColor = .cyan
         
 //        scrllVwAdmin.leadingAnchor.constraint(equalTo: vwBackgroundCard.leadingAnchor).isActive=true
         
-        view.layoutIfNeeded()
-        print("scrllVwHome width: \(scrllVwHome.frame.size)")
+//        view.layoutIfNeeded()
+//        print("scrllVwHome width: \(scrllVwHome.frame.size)")
         
         stckVwHome.translatesAutoresizingMaskIntoConstraints=false
-        scrllVwHome.addSubview(stckVwHome)
+        view.addSubview(stckVwHome)
+//        scrllVwHome.addSubview(stckVwHome)
         stckVwHome.accessibilityIdentifier = "stckVwHome"
         stckVwHome.axis = .vertical
-        stckVwHome.topAnchor.constraint(equalTo: scrllVwHome.topAnchor).isActive=true
-        stckVwHome.widthAnchor.constraint(equalToConstant: scrllVwHome.frame.size.width).isActive=true
-//        stckVwHome.leadingAnchor.constraint(equalTo: scrllVwHome.leadingAnchor).isActive=true
-//        stckVwHome.trailingAnchor.constraint(equalTo: scrllVwHome.trailingAnchor).isActive=true
-        stckVwHome.bottomAnchor.constraint(equalTo: scrllVwHome.bottomAnchor).isActive=true
-//        stckVwHome.backgroundColor = .black
+        stckVwHome.topAnchor.constraint(equalTo: vwVCTopTitle.bottomAnchor, constant: heightFromPct(percent: cardTopSpacing)).isActive=true
+//        stckVwHome.widthAnchor.constraint(equalToConstant: view.frame.size.width).isActive=true
+        stckVwHome.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive=true
+        stckVwHome.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive=true
+//        stckVwHome.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: heightFromPct(percent: -20)).isActive=true
         stckVwHome.spacing = 20
+//        stckVwHome.backgroundColor = UIColor(named: "gray-300")
+//        scrllVwHome.backgroundColor = UIColor.green
         setup_btnToRegister()
         setup_btnToLogin()
 //        setup_pickerApi()
+        setup_pickerApi()
     }
     
-    func setup_vwCard(){
-        vwCard.translatesAutoresizingMaskIntoConstraints = false
-        stckVwHome.insertArrangedSubview(vwCard, at: 0)
-        vwCard.accessibilityIdentifier = "vwCard"
-        vwCard.backgroundColor = UIColor(named: "gray-500")
-        vwCard.layer.cornerRadius = 10
-        
-        let stckvwCard = UIStackView()
-        stckvwCard.axis = .vertical
-        stckvwCard.spacing = 10
-        stckvwCard.translatesAutoresizingMaskIntoConstraints = false
-        vwCard.addSubview(stckvwCard)
-        stckvwCard.topAnchor.constraint(equalTo: vwCard.topAnchor, constant: heightFromPct(percent: 5)).isActive=true
-        stckvwCard.leadingAnchor.constraint(equalTo: vwCard.leadingAnchor, constant: widthFromPct(percent: 5)).isActive=true
-        stckvwCard.trailingAnchor.constraint(equalTo: vwCard.trailingAnchor, constant: widthFromPct(percent: -5)).isActive=true
-        stckvwCard.bottomAnchor.constraint(equalTo: vwCard.bottomAnchor, constant: heightFromPct(percent: -5)).isActive=true
-        
-        
-        let lblAppTitle = UILabel()
-        lblAppTitle.text = "Photos Backer Upper"
-        lblAppTitle.font = UIFont(name: "Rockwell_tu", size: 20)
-//        vwCard.addSubview(lblAppTitle)
-        stckvwCard.addArrangedSubview(lblAppTitle)
-        lblAppTitle.accessibilityIdentifier = "lblAppTitle"
-        lblAppTitle.translatesAutoresizingMaskIntoConstraints=false
-        
-//        let lblEtymology = UILabel()
-//        lblEtymology.text = "Etymology"
-//        lblEtymology.font = UIFont(name: "Rockwell-Bold_tu", size: 20)
-////        vwCard.addSubview(lblEtymology)
-//        stckvwCard.addArrangedSubview(lblEtymology)
-//        lblEtymology.accessibilityIdentifier = "lblEtymology"
-//        lblEtymology.translatesAutoresizingMaskIntoConstraints=false
 
-        let imgVwLine01 = createDividerLine(thicknessOfLine: 2)
-        stckvwCard.addArrangedSubview(imgVwLine01)
-        imgVwLine01.translatesAutoresizingMaskIntoConstraints=false
-//        imgVwLine01.topAnchor.constraint(equalTo: lblEtymology.bottomAnchor, constant: heightFromPct(percent: 2.5)).isActive=true
 
-        
-//        let lblEtymologyDef = UILabel()
-//        lblEtymologyDef.text = "Spanish rincón, literally, corner, nook, alteration of recón, rencón from Arabic dialect (Spain) rukun (Arabic rukn)"
-//        lblEtymologyDef.numberOfLines=0
-//        lblEtymologyDef.lineBreakMode = .byWordWrapping
-//        lblEtymologyDef.font = UIFont(name: "Rockwell_tu", size: 20)
-//        stckvwCard.addArrangedSubview(lblEtymologyDef)
-//        lblEtymologyDef.translatesAutoresizingMaskIntoConstraints=false
-//
-//
-//        let lblFirstKnown = UILabel()
-//        lblFirstKnown.text = "First Known Use"
-//        lblFirstKnown.font = UIFont(name: "Rockwell-Bold_tu", size: 20)
-//        stckvwCard.addArrangedSubview(lblFirstKnown)
-//        lblFirstKnown.translatesAutoresizingMaskIntoConstraints=false
-//
-//
-//        let imgVwLine02 = createDividerLine(thicknessOfLine: 2)
-////        vwCard.addSubview(imgVwLine02)
-//        stckvwCard.addArrangedSubview(imgVwLine02)
-//        imgVwLine02.translatesAutoresizingMaskIntoConstraints=false
-//
-//
-//        let lblDate = UILabel()
-//        lblDate.text = "1589"
-//        lblDate.font = UIFont(name: "Rockwell_tu", size: 20)
-//        stckvwCard.addArrangedSubview(lblDate)
-//        lblDate.translatesAutoresizingMaskIntoConstraints=false
-    }
     
     func setup_btnToRegister(){
         btnToRegister.setTitle("Register", for: .normal)
         btnToRegister.titleLabel?.font = UIFont(name: "Rockwell_tu", size: 20)
-        btnToRegister.backgroundColor = UIColor(named: "orangePrimary")
+//        btnToRegister.backgroundColor = UIColor(named: "orangePrimary")
         btnToRegister.layer.cornerRadius = 10
-        btnToRegister.translatesAutoresizingMaskIntoConstraints=false
+//        btnToRegister.translatesAutoresizingMaskIntoConstraints=false
+        btnToRegister.layer.borderColor = UIColor.gray.cgColor
+        btnToRegister.layer.cornerRadius = 10
+        btnToRegister.layer.borderWidth = 2
         stckVwHome.addArrangedSubview(btnToRegister)
         btnToRegister.sizeToFit()
         btnToRegister.heightAnchor.constraint(equalToConstant: btnToRegister.frame.size.height + 30).isActive=true
@@ -217,10 +165,10 @@ class HomeVC: UIViewController {
         btnToLogin.setTitle("Login", for: .normal)
         btnToLogin.titleLabel?.font = UIFont(name: "Rockwell_tu", size: 20)
         btnToLogin.setTitleColor(UIColor(named: "orangePrimary"), for: .normal)
-        btnToLogin.layer.borderColor = UIColor(named: "orangePrimary")?.cgColor
+        btnToLogin.layer.borderColor = UIColor.gray.cgColor
         btnToLogin.layer.cornerRadius = 10
         btnToLogin.layer.borderWidth = 2
-        btnToLogin.translatesAutoresizingMaskIntoConstraints=false
+//        btnToLogin.translatesAutoresizingMaskIntoConstraints=false
         stckVwHome.addArrangedSubview(btnToLogin)
         btnToLogin.sizeToFit()
         btnToLogin.heightAnchor.constraint(equalToConstant: btnToLogin.frame.size.height + 30).isActive=true
@@ -230,13 +178,13 @@ class HomeVC: UIViewController {
     
     func setup_pickerApi(){
         
-        let btnToDevWebsite = UIButton(type: .system)
-        btnToDevWebsite.setTitle("Photo Backer Upper Dev Website", for: .normal)
-        btnToDevWebsite.addTarget(self, action: #selector(goToDevWebsite), for: .touchUpInside)
-        btnToDevWebsite.titleLabel?.font = UIFont(name: "Rockwell_tu", size: 20)
-        stckVwHome.addArrangedSubview(btnToDevWebsite)
+//        let btnToDevWebsite = UIButton(type: .system)
+//        btnToDevWebsite.setTitle("Photo Backer Upper Dev Website", for: .normal)
+//        btnToDevWebsite.addTarget(self, action: #selector(goToDevWebsite), for: .touchUpInside)
+//        btnToDevWebsite.titleLabel?.font = UIFont(name: "Rockwell_tu", size: 20)
+//        stckVwHome.addArrangedSubview(btnToDevWebsite)
         
-        let stckVwApi = UIStackView()
+        
         stckVwApi.translatesAutoresizingMaskIntoConstraints=false
         stckVwApi.axis = .vertical
         stckVwHome.addArrangedSubview(stckVwApi)
@@ -254,7 +202,7 @@ class HomeVC: UIViewController {
             requestStore.apiBase = APIBase.local
 
         } else {
-            requestStore.apiBase = APIBase.dev
+            requestStore.apiBase = APIBase.prod
             arryEnvironment.remove(at: 0)
         }
 
@@ -266,9 +214,32 @@ class HomeVC: UIViewController {
         // Set initial selected segment
 //        segmentedControl.selectedSegmentIndex = arryEnvironment[urlStore.baseString] ?? 0
         segmentedControl.selectedSegmentIndex = arryEnvironment.firstIndex(where: { $0.urlString == requestStore.apiBase.urlString }) ?? 0
+        stckVwApi.translatesAutoresizingMaskIntoConstraints = false
         stckVwApi.addArrangedSubview(segmentedControl)
         print("APIBase is set to: \(requestStore.apiBase.rawValue)")
         vwVCTop.backgroundColor = environmentColor(requestStore:requestStore)
+
+        lblCheckApi = UILabel()
+        lblCheckApi.numberOfLines = 0
+        lblCheckApi.translatesAutoresizingMaskIntoConstraints=false
+        lblCheckApi.sizeToFit()
+//        stckVwApi.addArrangedSubview(lblCheckApi)
+        stckVwHome.addArrangedSubview(lblCheckApi)
+        
+        btnCheckApi = UIButton()
+        btnCheckApi.setTitle("Check API Status", for: .normal)
+        stckVwApi.addArrangedSubview(btnCheckApi)
+        btnCheckApi.layer.borderWidth = 2
+        btnCheckApi.layer.borderColor = UIColor.blue.cgColor
+        btnCheckApi.layer.cornerRadius = 20
+        btnCheckApi.addTarget(self, action: #selector(touchDownBtnCheckApi), for: .touchDown)
+        btnCheckApi.addTarget(self, action: #selector(touchUpInsideBtnCheckApi), for: .touchUpInside)
+        
+//        lblCheckApi.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+//        btnCheckApi.setContentHuggingPriority(.defaultLow, for: .vertical)
+//
+//        stckVwApi.distribution = .fill
+//        stckVwApi.alignment = .fill
 
 
     }
@@ -293,6 +264,34 @@ class HomeVC: UIViewController {
         }
     }
     
+    @objc func touchDownBtnCheckApi(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.1, delay: 0.0, options: [.curveEaseOut], animations: {
+            sender.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        }, completion: nil)
+
+    }
+
+    @objc func touchUpInsideBtnCheckApi(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.2, delay: 0.0, options: [.curveEaseInOut], animations: {
+            sender.transform = .identity
+        }, completion: nil)
+        requestStore.checkAPI { responseResult in
+            switch responseResult{
+            case let .success(responseString):
+                print("Successful response: \(responseString)")
+                DispatchQueue.main.async {
+                    self.lblCheckApi.text = responseString
+//                    self.sizeOfStuff()
+                }
+
+            case let .failure(error):
+                print("Failed to get resposne: \(error)")
+                self.lblCheckApi.text = error.localizedDescription
+            }
+        }
+    }
+    
+    
     
     @objc private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         let selectedEnvironment = arryEnvironment[sender.selectedSegmentIndex]
@@ -304,6 +303,14 @@ class HomeVC: UIViewController {
     @objc func goToDevWebsite() {
         guard let url = URL(string: "https://dev.tu-rincon.com") else { return }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
+    
+    func sizeOfStuff(){
+        print("------")
+        print("stckVwHome height: \(stckVwHome.frame.size.height)")
+        print("stckVwApi height: \(stckVwApi.frame.size.height)")
+        print("lblCheckApi height: \(lblCheckApi.frame.size.height)")
+        print(lblCheckApi.text)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

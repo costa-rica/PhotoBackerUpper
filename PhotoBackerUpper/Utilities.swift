@@ -75,3 +75,13 @@ func findActiveTextField(uiStackView: UIStackView) -> UITextField? {
     return nil
 }
 
+func getImageFrom(url: URL) -> UIImage? {
+    do {
+        let imageData = try Data(contentsOf: url)
+        let image = UIImage(data: imageData)
+        return image
+    } catch {
+        print("Error while getting image: \(error)")
+        return nil
+    }
+}

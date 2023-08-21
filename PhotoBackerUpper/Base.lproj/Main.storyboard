@@ -58,10 +58,29 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <navigationItem key="navigationItem" id="hwI-Yh-Jtm"/>
+                    <connections>
+                        <segue destination="cTZ-yW-dqa" kind="show" identifier="goToPhotosDirectoryVC" id="f6n-Gk-fD0"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x3E-58-5Ka" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2981" y="368"/>
+        </scene>
+        <!--Photos DirectoryVC-->
+        <scene sceneID="BDe-6P-7R0">
+            <objects>
+                <viewController storyboardIdentifier="PhotosDirectoryVC" id="cTZ-yW-dqa" customClass="PhotosDirectoryVC" customModule="PhotoBackerUpper" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="yCX-tV-cpH">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="Jvy-SK-ziQ"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="iEB-7R-vU0"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vo3-i4-2qM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3946" y="368"/>
         </scene>
         <!--RegisterVC-->
         <scene sceneID="lmd-Qg-xSd">

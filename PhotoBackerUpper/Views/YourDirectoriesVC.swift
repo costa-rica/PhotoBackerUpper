@@ -22,6 +22,8 @@ class YourDirectoriesVC: UIViewController, YourDirectoriesVCDelegate{
     var tblYourDirectories = UITableView()
     var btnYourDirectoryOptions: UIBarButtonItem!
     var arryDirectories:[Directory]!
+    var segueDirName:String!
+    var segueDir:Directory!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -145,17 +147,17 @@ class YourDirectoriesVC: UIViewController, YourDirectoriesVCDelegate{
     }
     
     
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if (segue.identifier == "goToDirectoryVC") {
-//            let rinconVC = segue.destination as! DirectoryVC
-//            rinconVC.navigationItem.title = self.segue_rincon.name
-//            rinconVC.rinconStore = self.rinconStore
-//            rinconVC.rinconStore.token = self.userStore.user.token!
-//            rinconVC.posts = self.segue_rincon_posts
-//            rinconVC.rincon = self.segue_rincon
-//            rinconVC.userStore = self.userStore
-//            rinconVC.urlStore = self.urlStore
-//        }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "goToPhotosDirectoryVC") {
+            let photosDirectoryVC = segue.destination as! PhotosDirectoryVC
+            photosDirectoryVC.navigationItem.title = self.segueDirName
+            photosDirectoryVC.requestStore = requestStore
+            photosDirectoryVC.directory = self.segueDir
+            photosDirectoryVC.userStore = userStore
+            photosDirectoryVC.directoryStore = directoryStore
+
+        }
+    }
 //        else if (segue.identifier == "goToSearchDirectoriesVC"){
 //            let searchDirectoriesVC = segue.destination as! SearchDirectoriesVC
 //            searchDirectoriesVC.arryDirectories = segue_rincons_array
@@ -193,23 +195,11 @@ class YourDirectoriesVC: UIViewController, YourDirectoriesVCDelegate{
 extension YourDirectoriesVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        print("Selelcted a directory ")
-//        if let unwrapped_rincons = userStore.user.user_rincons {
-//            self.segue_rincon = unwrapped_rincons[indexPath.row]
-//            self.rinconStore.requestDirectoryPosts(rincon: segue_rincon) { responseForDirectoryPostsArray in
-//                switch responseForDirectoryPostsArray{
-//                case let .success(arryDirectoryPosts):
-//                    for p in arryDirectoryPosts{
-//                        p.rincon_dir_path = self.rinconStore.rinconFolderUrl(rincon: self.segue_rincon)
-//                    }
-//                    self.segue_rincon_posts = arryDirectoryPosts
-//                case let .failure(error):
-//                    print("Directory posts did not download: \(error)")
-//                    self.alertYourDirectoriesVC(alertMessage: "Posts did not update")
-//                }
-//
-//            }
-//        }
+//        print("Selelcted a directory ")
+        segueDir = arryDirectories[indexPath.row]
+        segueDirName = arryDirectories[indexPath.row].display_name
+        
+        performSegue(withIdentifier: "goToPhotosDirectoryVC", sender: self)
         
         
     }

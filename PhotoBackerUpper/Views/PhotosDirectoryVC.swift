@@ -1,80 +1,74 @@
-//
-//  PhotosDirectoryVC.swift
-//  PhotoBackerUpper
-//
-//  Created by Nick Rodriguez on 19/08/2023.
-//
-
 import UIKit
+
 
 class PhotosDirectoryVC: UIViewController {
     
-    
-    // UI Components
-    let stckVwDirectory = UIStackView()
-    let btnSelectPhotos = UIButton()
-    let swtchDelete = UISwitch()
-    let lblDeletePhotos = UILabel()
-    let btnSubmit = UIButton()
+    var userStore: UserStore!
+    var requestStore: RequestStore!
+    var directoryStore: DirectoryStore!
+    var directory: Directory!
+    private var tblBackUpImages: UITableView!
+    var arryImageBackUp: [ImageBackUp] = []
 
-    // For holding the selected photos
-    var selectedImages: [UIImage] = []
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setupUI()
-    }
-    
-    func setupUI() {
-        // Set up the stack view
-        stckVwDirectory.axis = .vertical
-        stckVwDirectory.spacing = 10
-        stckVwDirectory.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stckVwDirectory)
-        
-        // Set up the select photos button
-        btnSelectPhotos.setTitle("Select Photos", for: .normal)
-        btnSelectPhotos.addTarget(self, action: #selector(selectPhotosTapped), for: .touchUpInside)
-        
-        // Set up the delete photos switch and label
-        lblDeletePhotos.text = "Delete photos?"
-        
-        // Set up the submit button
-        btnSubmit.setTitle("Submit", for: .normal)
-        btnSubmit.addTarget(self, action: #selector(submitTapped), for: .touchUpInside)
-        btnSubmit.isEnabled = false
-        
-        // Add components to the stack view
-        stckVwDirectory.addArrangedSubview(btnSelectPhotos)
-        stckVwDirectory.addArrangedSubview(lblDeletePhotos)
-        stckVwDirectory.addArrangedSubview(swtchDelete)
-        stckVwDirectory.addArrangedSubview(btnSubmit)
-        
-        // Add constraints
-        NSLayoutConstraint.activate([
-            stckVwDirectory.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            stckVwDirectory.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        ])
-    }
-    
-    
-    @objc func selectPhotosTapped() {
-//        let imagePickerController = UIImagePickerController()
-//        imagePickerController.delegate = self
-//        imagePickerController.sourceType = .photoLibrary
-//        imagePickerController.allowsEditing = false
-//        imagePickerController.mediaTypes = ["public.image"]
-//        imagePickerController.allowsMultipleSelection = true
-//        present(imagePickerController, animated: true)
+
+        let image1 = ImageBackUp()
+        let image2 = ImageBackUp()
+
+        image1.name = "first"
+        image2.name = "second"
+        arryImageBackUp.append(image1)
+        arryImageBackUp.append(image2)
+
+
+        setupTableView()
     }
 
-    @objc func submitTapped() {
-        // TODO: Implement sending the images to the API
-        
-        if swtchDelete.isOn {
-            // TODO: Implement deleting photos from the device
-        }
+    private func setupTableView() {
+        // Instantiate the table view
+        tblBackUpImages = UITableView(frame: view.bounds, style: .plain)
+
+        // Set datasource and delegate
+        tblBackUpImages.dataSource = self
+        tblBackUpImages.delegate = self
+
+        // Register cell
+        tblBackUpImages.register(UITableViewCell.self, forCellReuseIdentifier: "cellIdentifier")
+
+        // Add to view
+        view.addSubview(tblBackUpImages)
+
+        // Add constraints
+        tblBackUpImages.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tblBackUpImages.topAnchor.constraint(equalTo: view.topAnchor),
+            tblBackUpImages.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tblBackUpImages.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tblBackUpImages.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
     }
-    
-    
+
 }
+
+
+extension PhotosDirectoryVC: UITableViewDelegate, UITableViewDataSource{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return arryImageBackUp.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("- cellForRowAt")
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cellIdentifier", for: indexPath)
+        let imageBackup = arryImageBackUp[indexPath.row]
+        cell.textLabel?.text = imageBackup.name
+        return cell
+    }
+
+
+}
+
+
+
+
+

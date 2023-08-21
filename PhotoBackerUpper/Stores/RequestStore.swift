@@ -5,16 +5,20 @@
 //  Created by Nick Rodriguez on 18/08/2023.
 //
 
-import Foundation
+import UIKit
 
 enum RequestStoreError: Error{
     case failedToProvideCredentials
     case failedToCodeCredentials
+    case failedToReachServer
+    case failedToDecodeResponse
     
     var localizedDescription: String{
         switch self {
         case .failedToProvideCredentials: return "No credentials provided"
         case .failedToCodeCredentials: return "Credentials did not code into json"
+        case .failedToDecodeResponse: return "Failed to decode server response"
+        default: return "Failed to reach server"
         }
     }
 }
@@ -26,8 +30,8 @@ enum APIBase:String, CaseIterable {
     var urlString:String {
         switch self{
         case .local: return "http://127.0.0.1:5001/"
-        case .dev: return "https://dev.api.tu-rincon.com/"
-        case .prod: return "https://api.tu-rincon.com/"
+        case .dev: return "https://dev.api.photos-backer-upper.dashanddata.com/"
+        case .prod: return "https://api.photos-backer-upper.dashanddata.com/"
         }
     }
 }
@@ -37,6 +41,7 @@ enum EndPoint: String {
     case register = "register"
     case login = "login"
     case create_directory = "create_directory"
+    case receive_image = "receive_image"
 }
 
 class RequestStore {
@@ -84,7 +89,27 @@ class RequestStore {
     /*  Former:  URLStore Stuff --- End ----- */
     
 
-    
+    func checkAPI(completion:@escaping(Result<String,Error>)->Void){
+        let url = callEndpoint(endPoint: .are_we_running)
+        let request = URLRequest(url:url)
+        let task = session.dataTask(with: request) { data, resp, error in
+            if let data = data {
+                do {
+                    let jsonDecoder = JSONDecoder()
+                    let responseCheckApi = try jsonDecoder.decode(String.self, from:data)
+                    OperationQueue.main.addOperation {
+                        completion(.success(responseCheckApi))
+                    }
+                } catch {
+                    print("Failed to decode response")
+                    OperationQueue.main.addOperation {
+                        completion(.failure(RequestStoreError.failedToReachServer))
+                    }
+                }
+            }
+        }
+        task.resume()
+    }
     
     func createRequestWithBody(endPoint: EndPoint, dictBody:[String:String])->URLRequest? {
         print("- createRequestWithTokenAndBody")
@@ -214,7 +239,74 @@ class RequestStore {
         return request
     }
     
+    /* send image 3: stackoverflow version */
+    func createRequestSendImageAndTokenThree(dictNewImages:[String:UIImage]) -> (URLRequest, Data){
+        print("- createRequestSendImageAndTokenThree")
+        let url = callEndpoint(endPoint: .receive_image)
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue( self.user_token, forHTTPHeaderField: "x-access-token")
+        
+        let boundary = UUID().uuidString
+        urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        var data = Data()
+        for (filename, uiimage) in dictNewImages{
+            data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+            data.append("Content-Disposition: form-data; name=\"\(filename)\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+            data.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+            data.append(uiimage.jpegData(compressionQuality: 1)!)
+        }
+        
+        data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+        urlRequest.httpBody = data
+        return (urlRequest, data)
+    }
     
+    /* send image 4: ChatGPT version */
+    func createRequestSendImageAndTokenFour(endpoint:EndPoint, uiimage:UIImage, uiimageName:String, dictString:[String:String]) -> URLRequest?{
+//        guard let url = URL(string: urlString) else {
+//            print("Error: cannot create URL from string")
+//            return
+//        }
+        let url = callEndpoint(endPoint: .receive_image)
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        let imageData = uiimage.jpegData(compressionQuality: 1.0)
+        
+        if imageData == nil {
+            print("Error: could not convert image to data")
+            return nil
+        }
+        
+        var body = Data()
+        
+        // Append parameters
+        for (key, value) in dictString {
+            body.append("--\(boundary)\r\n")
+            body.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n")
+            body.append("\(value)\r\n")
+        }
+        
+        // Append image data
+        body.append("--\(boundary)\r\n")
+        body.append("Content-Disposition: form-data; name=\"uiimage\"; filename=\"\(uiimageName)\"\r\n")
+        body.append("Content-Type: image/jpeg\r\n\r\n")
+        body.append(imageData!)
+        body.append("\r\n")
+        
+        body.append("--\(boundary)--\r\n")
+        
+        request.httpBody = body
+        
+        return request
+    }
 }
 
 
