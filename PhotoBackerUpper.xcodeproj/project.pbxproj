@@ -516,6 +516,7 @@
 				DEVELOPMENT_TEAM = GL5QL25H5M;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PhotoBackerUpper/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "If you would like app to delete images after downloading this needs to be accepted.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -544,6 +545,7 @@
 				DEVELOPMENT_TEAM = GL5QL25H5M;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PhotoBackerUpper/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "If you would like app to delete images after downloading this needs to be accepted.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

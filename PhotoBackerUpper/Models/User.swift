@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import PhotosUI
 
 class User:Codable {
     var id: String?
@@ -64,6 +65,7 @@ class ImageBackUp{
     var uiimage:UIImage?
     var url: URL?
     var directory:Directory?
+    var phAsset: PHAsset?
 }
 
 

@@ -7,7 +7,7 @@
 
 import UIKit
 
-import UIKit
+import Photos
 
 class HomeVC: UIViewController {
     
@@ -33,6 +33,7 @@ class HomeVC: UIViewController {
     var stckVwApi = UIStackView()
     var lblCheckApi = UILabel()
     var btnCheckApi = UIButton()
+    let btnPromptAccess = UIButton()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,11 +46,17 @@ class HomeVC: UIViewController {
         setup_vwVCTop()
         setup_vwVCTopTitle()
         setup_stckVwHome()
-
+        setup_btnToRegister()
+        setup_btnToLogin()
+        setup_photoPermission()
+        setup_pickerApi()
+        
         print("Documents Directory: ", FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last ?? "Not Found!")
         print("finished loading HomeVC")
+        
         let computerName = ProcessInfo.processInfo.hostName
         print("Computer name: \(computerName)")
+        
 //        for family in UIFont.familyNames.sorted() {
 //            let names = UIFont.fontNames(forFamilyName: family)
 //            print("Family: \(family) Font names: \(names)")
@@ -105,44 +112,16 @@ class HomeVC: UIViewController {
     }
     
     func setup_stckVwHome(){
-        print("- setup_stckVwHome")
-//        scrllVwHome.translatesAutoresizingMaskIntoConstraints=false
-//        view.addSubview(scrllVwHome)
-//        scrllVwHome.accessibilityIdentifier="scrllVwHome"
-//
-//        scrllVwHome.topAnchor.constraint(equalTo:vwVCTopTitle.bottomAnchor, constant: heightFromPct(percent: cardTopSpacing)).isActive=true
-//        scrllVwHome.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: widthFromPct(percent: cardInteriorPadding)).isActive=true
-//        scrllVwHome.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: widthFromPct(percent: cardInteriorPadding * -1)).isActive=true
-////        scrllVwAdmin.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive=true
-//        scrllVwHome.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: heightFromPct(percent: -10)).isActive=true
-////        scrllVwHome.backgroundColor = .cyan
-        
-//        scrllVwAdmin.leadingAnchor.constraint(equalTo: vwBackgroundCard.leadingAnchor).isActive=true
-        
-//        view.layoutIfNeeded()
-//        print("scrllVwHome width: \(scrllVwHome.frame.size)")
-        
         stckVwHome.translatesAutoresizingMaskIntoConstraints=false
         view.addSubview(stckVwHome)
-//        scrllVwHome.addSubview(stckVwHome)
         stckVwHome.accessibilityIdentifier = "stckVwHome"
         stckVwHome.axis = .vertical
         stckVwHome.topAnchor.constraint(equalTo: vwVCTopTitle.bottomAnchor, constant: heightFromPct(percent: cardTopSpacing)).isActive=true
-//        stckVwHome.widthAnchor.constraint(equalToConstant: view.frame.size.width).isActive=true
         stckVwHome.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive=true
         stckVwHome.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive=true
-//        stckVwHome.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: heightFromPct(percent: -20)).isActive=true
         stckVwHome.spacing = 20
-//        stckVwHome.backgroundColor = UIColor(named: "gray-300")
-//        scrllVwHome.backgroundColor = UIColor.green
-        setup_btnToRegister()
-        setup_btnToLogin()
-//        setup_pickerApi()
-        setup_pickerApi()
+
     }
-    
-
-
     
     func setup_btnToRegister(){
         btnToRegister.setTitle("Register", for: .normal)
@@ -176,14 +155,18 @@ class HomeVC: UIViewController {
         btnToLogin.addTarget(self, action: #selector(touchUpInside(_:)), for: .touchUpInside)
     }
     
+    
+    func setup_photoPermission(){
+        btnPromptAccess.setTitle("App Photos Permissions", for: .normal)
+        btnPromptAccess.layer.borderWidth = 2
+        btnPromptAccess.layer.borderColor = UIColor.blue.cgColor
+        btnPromptAccess.layer.cornerRadius = 20
+        btnPromptAccess.addTarget(self, action: #selector(touchDownBtnPromptAccess), for: .touchDown)
+        btnPromptAccess.addTarget(self, action: #selector(touchUpInsideBtnPromptAccess), for: .touchUpInside)
+        stckVwHome.addArrangedSubview(btnPromptAccess)
+    }
+    
     func setup_pickerApi(){
-        
-//        let btnToDevWebsite = UIButton(type: .system)
-//        btnToDevWebsite.setTitle("Photo Backer Upper Dev Website", for: .normal)
-//        btnToDevWebsite.addTarget(self, action: #selector(goToDevWebsite), for: .touchUpInside)
-//        btnToDevWebsite.titleLabel?.font = UIFont(name: "Rockwell_tu", size: 20)
-//        stckVwHome.addArrangedSubview(btnToDevWebsite)
-        
         
         stckVwApi.translatesAutoresizingMaskIntoConstraints=false
         stckVwApi.axis = .vertical
@@ -250,7 +233,6 @@ class HomeVC: UIViewController {
         }, completion: nil)
 
     }
-
     @objc func touchUpInside(_ sender: UIButton) {
         UIView.animate(withDuration: 0.2, delay: 0.0, options: [.curveEaseInOut], animations: {
             sender.transform = .identity
@@ -262,6 +244,21 @@ class HomeVC: UIViewController {
             print("btnToLogin")
             performSegue(withIdentifier: "goToLoginVC", sender: self)
         }
+    }
+    
+    @objc func touchDownBtnPromptAccess(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.1, delay: 0.0, options: [.curveEaseOut], animations: {
+            sender.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        }, completion: nil)
+
+    }
+
+    @objc func touchUpInsideBtnPromptAccess(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.2, delay: 0.0, options: [.curveEaseInOut], animations: {
+            sender.transform = .identity
+        }, completion: nil)
+        requestPhotoLibraryPermission()
+
     }
     
     @objc func touchDownBtnCheckApi(_ sender: UIButton) {
@@ -291,7 +288,31 @@ class HomeVC: UIViewController {
         }
     }
     
-    
+    @objc func requestPhotoLibraryPermission() {
+        // Check the current authorization status
+        let status = PHPhotoLibrary.authorizationStatus()
+
+        switch status {
+        case .authorized:
+            // Already authorized, nothing to do
+//            break
+            alertHomeVC(alertMessage: "Already granted access to app",adjPermissions: true)
+        case .denied, .restricted:
+            // Denied or restricted, can redirect user to Settings app to manually change permission
+            if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+            }
+        case .notDetermined:
+            // Not determined, we can request permission
+            PHPhotoLibrary.requestAuthorization { newStatus in
+                if newStatus == .authorized {
+                    // Permission granted, now you can access the photo library
+                }
+            }
+        default:
+            break
+        }
+    }
     
     @objc private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         let selectedEnvironment = arryEnvironment[sender.selectedSegmentIndex]
@@ -310,8 +331,48 @@ class HomeVC: UIViewController {
         print("stckVwHome height: \(stckVwHome.frame.size.height)")
         print("stckVwApi height: \(stckVwApi.frame.size.height)")
         print("lblCheckApi height: \(lblCheckApi.frame.size.height)")
-        print(lblCheckApi.text)
+//        print(lblCheckApi.text)
     }
+    
+    
+    func alertHomeVC(alertMessage:String, adjPermissions:Bool) {
+        // Create an alert
+        let alert = UIAlertController(title: nil, message: alertMessage, preferredStyle: .alert)
+        
+
+        
+        if adjPermissions{
+            // Create an OK button
+            let permissionsAction = UIAlertAction(title: "Change Permissions", style: .default) { (action) in
+                // Dismiss the alert when the OK button is tapped
+                alert.dismiss(animated: true, completion: nil)
+                // Go back to HomeVC
+//                self.navigationController?.popViewController(animated: true)
+                
+                if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+                }
+            }
+            alert.addAction(permissionsAction)
+        } else {
+            // Create an OK button
+            let okAction = UIAlertAction(title: "OK", style: .default) { (action) in
+                // Dismiss the alert when the OK button is tapped
+                alert.dismiss(animated: true, completion: nil)
+                // Go back to HomeVC
+//                self.navigationController?.popViewController(animated: true)
+            }
+            // Add the OK button to the alert
+            alert.addAction(okAction)
+        }
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        // Present the alert
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "goToLoginVC"){

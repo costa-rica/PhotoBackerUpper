@@ -83,7 +83,7 @@ class DirectoryStore {
 //    }
 
 
-    func uploadImage(_ image: UIImage, uiimageName:String, withParameters params: [String: String],  completion: @escaping (Result<[String:String],Error>) -> Void) {
+    func uploadImage(image: UIImage, uiimageName:String, withParameters params: [String: String],  completion: @escaping (Result<[String:String],Error>) -> Void) {
 
         
         let request = requestStore.createRequestSendImageAndTokenFour(endpoint: .receive_image, uiimage: image,uiimageName:uiimageName, dictString: params )

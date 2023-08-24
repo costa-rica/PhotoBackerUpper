@@ -85,3 +85,4 @@ func getImageFrom(url: URL) -> UIImage? {
         return nil
     }
 }
+
