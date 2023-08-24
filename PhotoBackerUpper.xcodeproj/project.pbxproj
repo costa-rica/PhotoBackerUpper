@@ -28,6 +28,7 @@
 		01D73B7F2A8F736D00993564 /* SearchDirectoriesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D73B7E2A8F736D00993564 /* SearchDirectoriesVC.swift */; };
 		01D73B812A90A7CF00993564 /* PhotosDirectoryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D73B802A90A7CF00993564 /* PhotosDirectoryVC.swift */; };
 		01D73B842A91260E00993564 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 01D73B832A91260E00993564 /* Alamofire */; };
+		01D73BC42A97822200993564 /* PhotosDownloadVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D73BC32A97822200993564 /* PhotosDownloadVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,7 @@
 		01D73B7C2A8F57BB00993564 /* DirectoriesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoriesStore.swift; sourceTree = "<group>"; };
 		01D73B7E2A8F736D00993564 /* SearchDirectoriesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDirectoriesVC.swift; sourceTree = "<group>"; };
 		01D73B802A90A7CF00993564 /* PhotosDirectoryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosDirectoryVC.swift; sourceTree = "<group>"; };
+		01D73BC32A97822200993564 /* PhotosDownloadVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosDownloadVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,6 +184,7 @@
 				01D73B782A8F553E00993564 /* YourDirectoriesVC.swift */,
 				01D73B7E2A8F736D00993564 /* SearchDirectoriesVC.swift */,
 				01D73B802A90A7CF00993564 /* PhotosDirectoryVC.swift */,
+				01D73BC32A97822200993564 /* PhotosDownloadVC.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -326,6 +329,7 @@
 				01D73B7F2A8F736D00993564 /* SearchDirectoriesVC.swift in Sources */,
 				01D73B812A90A7CF00993564 /* PhotosDirectoryVC.swift in Sources */,
 				01D73B792A8F553E00993564 /* YourDirectoriesVC.swift in Sources */,
+				01D73BC42A97822200993564 /* PhotosDownloadVC.swift in Sources */,
 				01D73B3C2A8E4BAC00993564 /* HomeVC.swift in Sources */,
 				01D73B6B2A8EB5B300993564 /* UserStore.swift in Sources */,
 				01D73B702A8EB65400993564 /* Utilities.swift in Sources */,

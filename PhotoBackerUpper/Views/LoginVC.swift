@@ -379,6 +379,7 @@ class LoginVC: UIViewController, LoginVCDelegate{
             let yourDirectoriesVC = segue.destination as! YourDirectoriesVC
             yourDirectoriesVC.userStore = self.userStore
             yourDirectoriesVC.requestStore = self.requestStore
+            yourDirectoriesVC.requestStore.user_token = self.token
             yourDirectoriesVC.directoryStore = self.directoryStore
             yourDirectoriesVC.navigationItem.title = "Your Directories"
             yourDirectoriesVC.loginVcDelegate = self

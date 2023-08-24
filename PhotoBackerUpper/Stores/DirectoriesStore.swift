@@ -11,19 +11,23 @@ import Alamofire
 enum DirectoryStoreError: Error {
     case failedToCreateDirectory
     case failedToSendImage
+    case failedToReceiveImage
+    case failedToConvertDataToImage
+    case failedToGetStuffFromServerAPI
     
     var localizedDescription: String {
         switch self {
         case .failedToCreateDirectory: return "Server unable to make new directory"
-        case .failedToSendImage: return "Server did not receive the image sent"
+        case .failedToSendImage: return "Server did not RECEIVE the image sent"
+        case .failedToReceiveImage: return "Server did not SEND Image"
+        case .failedToConvertDataToImage: return "Data from server failed to convert to an image"
+        default: return "failedToGetStuffFromServerAPI"
         }
     }
 }
 
 class DirectoryStore {
     var requestStore:RequestStore!
-    
-    
     
     func createDirectory(directoryName:String,is_public: Bool, completion:@escaping(Result<Directory,Error>)->Void){
         let request = requestStore.createRequestWithTokenAndBody(endPoint: .create_directory, dictBody: ["new_dir_name":directoryName])
@@ -47,48 +51,10 @@ class DirectoryStore {
         task.resume()
     }
     
-    
-    
-
-//    func uploadImage(imageFilename: String, imageData: Data, directory: String, completion: @escaping (Result<[String: Any], Error>) -> Void) {
-//        let url = requestStore.apiBase.urlString
-//
-//        // Parameters for JSON data
-//        let parameters: [String: String] = [
-//            "json": "{\"directory\": \"\(directory)\"}"
-//        ]
-//
-//        AF.upload(multipartFormData: { multipartFormData in
-//            // Append image data
-//            multipartFormData.append(imageData, withName: "file", fileName: imageFilename, mimeType: "image/jpeg")
-//
-//            // Append parameters
-//            for (key, value) in parameters {
-//                if let data = value.data(using: .utf8) {
-//                    multipartFormData.append(data, withName: key)
-//                }
-//            }
-//        }, to: url, method: .post).responseDecodable { response in
-//            switch response.result {
-//            case .success(let value):
-//                if let JSON = value as? [String: Any] {
-//                    completion(.success(JSON))
-//                } else {
-//                    completion(.failure(NSError(domain: "InvalidData", code: -1, userInfo: nil)))
-//                }
-//            case .failure(let error):
-//                completion(.failure(error))
-//            }
-//        }
-//    }
-
-
     func uploadImage(image: UIImage, uiimageName:String, withParameters params: [String: String],  completion: @escaping (Result<[String:String],Error>) -> Void) {
 
-        
         let request = requestStore.createRequestSendImageAndTokenFour(endpoint: .receive_image, uiimage: image,uiimageName:uiimageName, dictString: params )
         
-//        let session = URLSession.shared
         let task = requestStore.session.dataTask(with: request!) { data, response, error in
             if let data = data {
                 do {
@@ -109,68 +75,51 @@ class DirectoryStore {
         task.resume()
     }
 
-//    // Usage
-//    if let sampleImage = UIImage(named: "sampleImage") {
-//        let params: [String: String] = ["param1": "value1", "param2": "value2"]
-//        uploadImage(sampleImage, withParameters: params, toURL: "https://example.com/upload") { (data, response, error) in
-//            if let error = error {
-//                print("Error:", error)
-//                return
-//            }
-//
-//            // Handle the response and data as required
-//        }
-//    }
+    func receiveImageFilenamesArray(directory:Directory,completion:@escaping(Result<[String],Error>)->Void){
+        let request = requestStore.createRequestWithTokenAndBody(endPoint: .get_dir_image_list, dictBody: ["directory_id":directory.id])
+        let task = requestStore.session.dataTask(with: request) { data, response, error in
+            if let unwp_data = data {
+                do {
+                    let jsonDecoder = JSONDecoder()
+                    let arryFilenames = try jsonDecoder.decode([String].self,from: unwp_data)
+                    OperationQueue.main.addOperation {
+                        completion(.success(arryFilenames))
+                    }
+                } catch{
+                    OperationQueue.main.addOperation {
+                        completion(.failure(DirectoryStoreError.failedToGetStuffFromServerAPI))
+                    }
+                }
 
-
+            }
+        }
+        task.resume()
+    }
     
-    
+    func receiveImage(directory:Directory,imageFilename:String, completion:@escaping(Result<UIImage,Error>)->Void){
+        let request = requestStore.createRequestWithTokenAndBody(endPoint: .send_image, dictBody: ["directory_id":directory.id,"file_name":imageFilename])
+        let task = requestStore.session.dataTask(with: request) { data, response, error in
+//            let result = self.processImageRequest(data: data, error: error)
+            if let unwp_data = data {
+                OperationQueue.main.addOperation {
+                    let uiimageResult = UIImage(data: unwp_data)
+                    if let unwp_uiimageResult = uiimageResult{
+                        completion(.success(unwp_uiimageResult))
+                        print("--> Successfully downloaded image: \(imageFilename)")
+                    } else {
+                        completion(.failure(DirectoryStoreError.failedToConvertDataToImage))
+                    }
+                }
+            }
+            if let unwrapped_error = error{
+                print("Error photo request: \(unwrapped_error)")
+                completion(.failure(DirectoryStoreError.failedToReceiveImage))
+            }
+        }
+        task.resume()
+    }
 
-//    func postImage(image: UIImage, body: [String:String]) {
-//      // Create a URL for the POST request.
-//      let url = URL(string: "https://example.com/api/v1/photos")!
-//
-//      // Create a multipart form data request.
-//      let boundary = "----WebKitFormBoundary7MAJ16kKGqFhcea"
-//      let bodyData = NSMutableData()
-//
-//      // Add the image to the request.
-//        bodyData.append(Data("--\(boundary)\r\n".utf8))
-//      bodyData.append("Content-Disposition: form-data; name=\"image\"; filename=\"image.jpeg\"\r\n")
-//      bodyData.append("Content-Type: image/jpeg\r\n\r\n")
-//      bodyData.append(image.jpegData(compressionQuality: 1.0)!)
-//
-//      // Add the other body parameters to the request.
-//      for (key, value) in body {
-//        bodyData.append("--\(boundary)\r\n")
-//        bodyData.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n")
-//        bodyData.append("\(value)\r\n")
-//      }
-//
-//      // Add the end of the multipart form data.
-//      bodyData.append("--\(boundary)--\r\n")
-//
-//      // Create the URLRequest object.
-//      let request = URLRequest(url: url)
-//      request.httpMethod = "POST"
-//      request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-//      request.httpBody = bodyData as Data
-//
-//      // Send the request.
-//      let task = URLSession.shared.dataTask(with: request) { data, response, error in
-//        guard let data = data else {
-//          print(error!)
-//          return
-//        }
-//
-//        // Print the response data.
-//        print(String(data: data, encoding: .utf8)!)
-//      }
-//
-//      task.resume()
-//    }
 
-    
     
 }
 

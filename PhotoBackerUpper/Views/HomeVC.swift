@@ -217,12 +217,7 @@ class HomeVC: UIViewController {
         btnCheckApi.layer.cornerRadius = 20
         btnCheckApi.addTarget(self, action: #selector(touchDownBtnCheckApi), for: .touchDown)
         btnCheckApi.addTarget(self, action: #selector(touchUpInsideBtnCheckApi), for: .touchUpInside)
-        
-//        lblCheckApi.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
-//        btnCheckApi.setContentHuggingPriority(.defaultLow, for: .vertical)
-//
-//        stckVwApi.distribution = .fill
-//        stckVwApi.alignment = .fill
+
 
 
     }

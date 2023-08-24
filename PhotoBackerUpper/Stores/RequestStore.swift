@@ -41,7 +41,15 @@ enum EndPoint: String {
     case register = "register"
     case login = "login"
     case create_directory = "create_directory"
-    case receive_image = "receive_image"
+    case receive_image = "receive_image"// api server receives
+    case get_dir_image_list = "get_dir_image_list"// from api server
+    case send_image = "send_image"// to iOS device
+    
+}
+
+enum AppFunction: String, CaseIterable {
+    case backup = "backup"
+    case download = "download"
 }
 
 class RequestStore {
@@ -77,14 +85,7 @@ class RequestStore {
         return components.url!
     }
 
-    private func callApiQueryStrings(endPoint:EndPoint, queryStringArray:[String]) -> URL {
-        var urlString = apiBase.urlString + endPoint.rawValue
-        for queryString in queryStringArray {
-            urlString = urlString + "/\(queryString)"
-        }
-        let components = URLComponents(string:urlString)!
-        return components.url!
-    }
+
     
     /*  Former:  URLStore Stuff --- End ----- */
     
@@ -158,49 +159,6 @@ class RequestStore {
         return request
     }
     
-    func createRequestWithTokenAndQueryString(endpoint: EndPoint, queryString:[String]) -> URLRequest{
-        print("- createRequestWithTokenAndQueryString")
-
-        let url = callApiQueryStrings(endPoint: endpoint, queryStringArray: queryString)
-        print("url: \(url)")
-        var request = URLRequest(url:url)
-        request.httpMethod = "POST"
-        request.addValue("application/json",forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json",forHTTPHeaderField: "Accept")
-        request.setValue( user_token, forHTTPHeaderField: "x-access-token")
-        
-        return request
-    }
-    
-    func createRequestWithTokenAndDirectoryAndQueryStringAndBody(endpoint: EndPoint, rincon_id:String, queryString:[String], bodyParamDict:[String:String]?) -> URLRequest{
-        print("- createRequestWithTokenAndDirectoryAndQueryStringAndBody")
-        var jsonData = Data()
-//        var url = urlStore.callDirectoryEndpoint(endPoint: .rincon_posts, rincon_id: rincon_id)
-        let url = callApiQueryStrings(endPoint: endpoint, queryStringArray: queryString)
-
-        print("url: \(url)")
-        var request = URLRequest(url:url)
-        request.httpMethod = "POST"
-        request.addValue("application/json",forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json",forHTTPHeaderField: "Accept")
-//        print("** DirectoryStore token \(self.token!)")
-        request.setValue( user_token, forHTTPHeaderField: "x-access-token")
-        
-//        print("reques.header: \(request.allHTTPHeaderFields!)")
-        if var unwrapped_bodyParamsDict = bodyParamDict{
-            unwrapped_bodyParamsDict["ios_flag"] = "true"
-            do {
-                let jsonEncoder = JSONEncoder()
-                jsonData = try jsonEncoder.encode(unwrapped_bodyParamsDict)
-            } catch {
-                print("- Failed to encode rincon_id ")
-            }
-            request.httpBody = jsonData
-            return request
-        }
-        return request
-    }
-    
     func printCallBackToTerminal(){
         let url = callEndpoint(endPoint: .are_we_running)
         let task = self.session.dataTask(with: url) { (data, response, error) in
@@ -225,51 +183,50 @@ class RequestStore {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue( user_token, forHTTPHeaderField: "x-access-token")
-
+//        print("user_token: \(user_token)")
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         do {
             let jsonData = try encoder.encode(dictBody)
             request.httpBody = jsonData
+            print("Successfully added data to body")
         } catch {
             print("Failed to encode dict_body: \(error)")
 
         }
         print("built request: \(request)")
+//        print(request.httpBody as! [String:String])
         return request
     }
     
-    /* send image 3: stackoverflow version */
-    func createRequestSendImageAndTokenThree(dictNewImages:[String:UIImage]) -> (URLRequest, Data){
-        print("- createRequestSendImageAndTokenThree")
-        let url = callEndpoint(endPoint: .receive_image)
-        
-        var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = "POST"
-        urlRequest.setValue( self.user_token, forHTTPHeaderField: "x-access-token")
-        
-        let boundary = UUID().uuidString
-        urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
-        var data = Data()
-        for (filename, uiimage) in dictNewImages{
-            data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-            data.append("Content-Disposition: form-data; name=\"\(filename)\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
-            data.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-            data.append(uiimage.jpegData(compressionQuality: 1)!)
-        }
-        
-        data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-        urlRequest.httpBody = data
-        return (urlRequest, data)
-    }
+//    /* send image 3: stackoverflow version */
+//    func createRequestSendImageAndTokenThree(dictNewImages:[String:UIImage]) -> (URLRequest, Data){
+//        print("- createRequestSendImageAndTokenThree")
+//        let url = callEndpoint(endPoint: .receive_image)
+//
+//        var urlRequest = URLRequest(url: url)
+//        urlRequest.httpMethod = "POST"
+//        urlRequest.setValue( self.user_token, forHTTPHeaderField: "x-access-token")
+//
+//        let boundary = UUID().uuidString
+//        urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+//
+//        var data = Data()
+//        for (filename, uiimage) in dictNewImages{
+//            data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+//            data.append("Content-Disposition: form-data; name=\"\(filename)\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+//            data.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+//            data.append(uiimage.jpegData(compressionQuality: 1)!)
+//        }
+//
+//        data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+//        urlRequest.httpBody = data
+//        return (urlRequest, data)
+//    }
     
     /* send image 4: ChatGPT version */
     func createRequestSendImageAndTokenFour(endpoint:EndPoint, uiimage:UIImage, uiimageName:String, dictString:[String:String]) -> URLRequest?{
-//        guard let url = URL(string: urlString) else {
-//            print("Error: cannot create URL from string")
-//            return
-//        }
+
         let url = callEndpoint(endPoint: .receive_image)
         
         var request = URLRequest(url: url)

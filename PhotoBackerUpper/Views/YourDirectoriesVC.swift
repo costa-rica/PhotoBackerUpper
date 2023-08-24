@@ -24,6 +24,16 @@ class YourDirectoriesVC: UIViewController, YourDirectoriesVCDelegate{
     var arryDirectories:[Directory]!
     var segueDirName:String!
     var segueDir:Directory!
+    var segueDirFilenames=[String](){
+        didSet{
+            if segueDirFilenames.count > 0 {
+                performSegue(withIdentifier: "goToPhotosDownloadVC", sender: self)
+            }
+        }
+    }
+    
+    var arryAppFunction=AppFunction.allCases
+    var appFunctionSelected=AppFunction.backup
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +51,7 @@ class YourDirectoriesVC: UIViewController, YourDirectoriesVCDelegate{
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refreshData(_:)), for: .valueChanged)
         tblYourDirectories.refreshControl = refreshControl
-        
+        setup_pickerBackupOrDownload()
         print("- YourDirectoriesVC viewDidLoad() end")
 
     }
@@ -55,30 +65,53 @@ class YourDirectoriesVC: UIViewController, YourDirectoriesVCDelegate{
         vwVCTop.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive=true
     }
     
+    func setup_btnYourDirectoryOptions() {
+        btnYourDirectoryOptions = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(onYourDirectoryOptions))
+        navigationItem.rightBarButtonItem = btnYourDirectoryOptions
+    }
+    
     func setup_stckVwYourDirectories(){
         view.addSubview(stckVwYourDirectories)
         stckVwYourDirectories.translatesAutoresizingMaskIntoConstraints=false
         stckVwYourDirectories.axis = .vertical
-        stckVwYourDirectories.topAnchor.constraint(equalTo: vwVCTop.bottomAnchor).isActive=true
+        stckVwYourDirectories.topAnchor.constraint(equalTo: vwVCTop.bottomAnchor,constant: heightFromPct(percent: 5)).isActive=true
         stckVwYourDirectories.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive=true
         stckVwYourDirectories.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive=true
         stckVwYourDirectories.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive=true
         
         tblYourDirectories.translatesAutoresizingMaskIntoConstraints=false
         stckVwYourDirectories.addArrangedSubview(tblYourDirectories)
+        stckVwYourDirectories.spacing = 20
                 
     }
     
     
-    func setup_btnYourDirectoryOptions() {
-        btnYourDirectoryOptions = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(onYourDirectoryOptions))
-        navigationItem.rightBarButtonItem = btnYourDirectoryOptions
+
+    
+    func setup_pickerBackupOrDownload(){
+        
+        let segmentedControl = UISegmentedControl(items: arryAppFunction.map { $0.rawValue })
+        segmentedControl.addTarget(self, action: #selector(segmentedControlValueChanged), for: .valueChanged)
+        
+        // Set initial selected segment
+//        segmentedControl.selectedSegmentIndex = arryEnvironment[urlStore.baseString] ?? 0
+        segmentedControl.selectedSegmentIndex = arryAppFunction.firstIndex(where: { $0.rawValue == "backup" }) ?? 0
+        stckVwYourDirectories.insertArrangedSubview(segmentedControl, at: 0)
+    }
+    
+    @objc private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+        let selectedEnvironment = arryAppFunction[sender.selectedSegmentIndex]
+        appFunctionSelected = selectedEnvironment
+        print("appFunctionSelected: \(appFunctionSelected.rawValue)")
+//        requestStore.apiBase = selectedEnvironment
+//        print("API base changed by user to: \(requestStore.apiBase.urlString)")
+//        vwVCTop.backgroundColor = environmentColor(requestStore:requestStore)
     }
 
     @objc func onYourDirectoryOptions() {
         // Create an action sheet
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        actionSheet.addAction(UIAlertAction(title: "Search/Create Rincón", style: .default, handler: { action in
+        actionSheet.addAction(UIAlertAction(title: "Search/Create Directory", style: .default, handler: { action in
             print("Some Directories Stuff here")
             // Get rincons availible to user
 //            self.rinconStore.getDirectoriesForSearch { jsonDirectoryArray in
@@ -94,23 +127,10 @@ class YourDirectoriesVC: UIViewController, YourDirectoriesVCDelegate{
         // Show the action sheet
         self.present(actionSheet, animated: true, completion: nil)
     }
-
     
     @objc private func refreshData(_ sender: UIRefreshControl) {
         print("-- Call to get Directores")
-//        self.rinconStore.requestUserDirectories { responseResultDirectories in
-//            switch responseResultDirectories {
-//            case let .success(arryDirectories):
-//                self.userStore.user.user_rincons = arryDirectories
-//                self.tblYourDirectories.reloadData()
-//                sender.endRefreshing()
-//            case let .failure(error):
-//                print("Error updating rincon array: \(error)")
-//                self.alertYourDirectoriesVcRefresh(alertMessage: "Failed to update rincon list", sender: sender)
-//            }
-//        }
     }
-    
     
     func alertYourDirectoriesVC(alertMessage:String) {
         // Create an alert
@@ -146,7 +166,6 @@ class YourDirectoriesVC: UIViewController, YourDirectoriesVCDelegate{
         self.present(alert, animated: true, completion: nil)
     }
     
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "goToPhotosDirectoryVC") {
             let photosDirectoryVC = segue.destination as! PhotosDirectoryVC
@@ -155,35 +174,25 @@ class YourDirectoriesVC: UIViewController, YourDirectoriesVCDelegate{
             photosDirectoryVC.directory = self.segueDir
             photosDirectoryVC.userStore = userStore
             photosDirectoryVC.directoryStore = directoryStore
-
+        } else if (segue.identifier == "goToPhotosDownloadVC"){
+            let photosDownloadVC = segue.destination as! PhotosDownloadVC
+            photosDownloadVC.navigationItem.title = self.segueDirName
+            photosDownloadVC.requestStore = requestStore
+            photosDownloadVC.directory = self.segueDir
+            photosDownloadVC.userStore = userStore
+            photosDownloadVC.directoryStore = directoryStore
+            photosDownloadVC.arryDirFilenames = self.segueDirFilenames
         }
     }
-//        else if (segue.identifier == "goToSearchDirectoriesVC"){
-//            let searchDirectoriesVC = segue.destination as! SearchDirectoriesVC
-//            searchDirectoriesVC.arryDirectories = segue_rincons_array
-//            searchDirectoriesVC.rinconStore = rinconStore
-//            searchDirectoriesVC.urlStore = self.urlStore
-//
-//        } else if (segue.identifier == "goToManageUserVC"){
-//            let manageUserVc = segue.destination as! ManageUserVC
-//            manageUserVc.userStore = self.userStore
-//            manageUserVc.rinconStore = self.rinconStore
-//            manageUserVc.navigationItem.title = self.userStore.user.username
-//            manageUserVc.yourDirectoriesVcDelegate = self
-//            manageUserVc.urlStore = self.urlStore
-//        }
-//    }
+
     
     /* Delegate functions */
-    
     func goBackToLogin(){
         print("- in YourDirectoriesVC delegate method")
         if let unwp_navController = self.navigationController{
-
             print("self.navigationController: \(unwp_navController)")
             print("viewControllers: \(unwp_navController.viewControllers)")
             print("visibleViewController: \(unwp_navController.visibleViewController!)")
-            
             self.navigationController?.popViewController(animated: true)
             self.loginVcDelegate.clearUser()
 
@@ -192,32 +201,35 @@ class YourDirectoriesVC: UIViewController, YourDirectoriesVCDelegate{
     
 }
 
-extension YourDirectoriesVC: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-//        print("Selelcted a directory ")
-        segueDir = arryDirectories[indexPath.row]
-        segueDirName = arryDirectories[indexPath.row].display_name
-        
-        performSegue(withIdentifier: "goToPhotosDirectoryVC", sender: self)
-        
-        
-    }
-}
 
-extension YourDirectoriesVC: UITableViewDataSource {
+extension YourDirectoriesVC: UITableViewDelegate, UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
         return arryDirectories.count
-
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "UITableViewCell", for: indexPath)
         cell.textLabel?.text = arryDirectories[indexPath.row].display_name
-
-//        }
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        segueDir = arryDirectories[indexPath.row]
+        segueDirName = arryDirectories[indexPath.row].display_name
+        
+        if appFunctionSelected == .backup{
+            performSegue(withIdentifier: "goToPhotosDirectoryVC", sender: self)
+        } else {
+            directoryStore.receiveImageFilenamesArray(directory: segueDir) { resultResponseArray in
+                switch resultResponseArray{
+                case let .success(arryFilenames):
+                    self.segueDirFilenames = arryFilenames
+                case let .failure(error):
+                    print("Failed to get list of filenames: \(error)")
+                }
+            }
+        }
     }
 }
 
