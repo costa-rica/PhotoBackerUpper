@@ -231,16 +231,10 @@ class RequestStore {
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.setValue( self.user_token, forHTTPHeaderField: "x-access-token")
         
         let boundary = "Boundary-\(UUID().uuidString)"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
-        let imageData = uiimage.jpegData(compressionQuality: 1.0)
-        
-        if imageData == nil {
-            print("Error: could not convert image to data")
-            return nil
-        }
         
         var body = Data()
         
@@ -251,12 +245,42 @@ class RequestStore {
             body.append("\(value)\r\n")
         }
         
-        // Append image data
-        body.append("--\(boundary)\r\n")
-        body.append("Content-Disposition: form-data; name=\"uiimage\"; filename=\"\(uiimageName)\"\r\n")
-        body.append("Content-Type: image/jpeg\r\n\r\n")
-        body.append(imageData!)
-        body.append("\r\n")
+        
+        let imageData = uiimage.jpegData(compressionQuality: 1.0)
+        
+        if imageData == nil {
+            print("Error: could not convert image to data")
+            return nil
+        }
+        
+        // Check if the image name has the .png extension
+        if uiimageName.hasSuffix(".png") {
+            // Send the image as a PNG
+            let imageData = uiimage.pngData()
+            body.append("--\(boundary)\r\n")
+            body.append("Content-Disposition: form-data; name=\"uiimage\"; filename=\"\(uiimageName)\"\r\n")
+            body.append("Content-Type: image/png\r\n\r\n")
+            body.append(imageData!)
+            body.append("\r\n")
+        } else {
+            // Send the image as a JPEG
+            let imageData = uiimage.jpegData(compressionQuality: 1.0)
+            body.append("--\(boundary)\r\n")
+            body.append("Content-Disposition: form-data; name=\"uiimage\"; filename=\"\(uiimageName)\"\r\n")
+            body.append("Content-Type: image/jpeg\r\n\r\n")
+            body.append(imageData!)
+            body.append("\r\n")
+        }
+        
+        
+        
+        
+//        // Append image data
+//        body.append("--\(boundary)\r\n")
+//        body.append("Content-Disposition: form-data; name=\"uiimage\"; filename=\"\(uiimageName)\"\r\n")
+//        body.append("Content-Type: image/jpeg\r\n\r\n")
+//        body.append(imageData!)
+//        body.append("\r\n")
         
         body.append("--\(boundary)--\r\n")
         

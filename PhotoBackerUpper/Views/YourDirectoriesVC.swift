@@ -52,7 +52,7 @@ class YourDirectoriesVC: UIViewController, YourDirectoriesVCDelegate{
         refreshControl.addTarget(self, action: #selector(refreshData(_:)), for: .valueChanged)
         tblYourDirectories.refreshControl = refreshControl
         setup_pickerBackupOrDownload()
-        print("- YourDirectoriesVC viewDidLoad() end")
+//        print("- YourDirectoriesVC viewDidLoad() end")
 
     }
     func setup_vwVCTop(){
@@ -188,11 +188,11 @@ class YourDirectoriesVC: UIViewController, YourDirectoriesVCDelegate{
     
     /* Delegate functions */
     func goBackToLogin(){
-        print("- in YourDirectoriesVC delegate method")
+//        print("- in YourDirectoriesVC delegate method")
         if let unwp_navController = self.navigationController{
-            print("self.navigationController: \(unwp_navController)")
-            print("viewControllers: \(unwp_navController.viewControllers)")
-            print("visibleViewController: \(unwp_navController.visibleViewController!)")
+//            print("self.navigationController: \(unwp_navController)")
+//            print("viewControllers: \(unwp_navController.viewControllers)")
+//            print("visibleViewController: \(unwp_navController.visibleViewController!)")
             self.navigationController?.popViewController(animated: true)
             self.loginVcDelegate.clearUser()
 

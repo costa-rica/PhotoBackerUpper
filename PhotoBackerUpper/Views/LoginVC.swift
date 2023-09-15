@@ -60,10 +60,10 @@ class LoginVC: UIViewController, LoginVCDelegate{
                 }
                 
                 if goToAdminFlag{
-                    print("- token didSet goToAdminFlag")
+//                    print("- token didSet goToAdminFlag")
                     performSegue(withIdentifier: "goToAdminVC", sender: self)
                 } else{
-                    print("- token didSet goToAdminFlag: False --> goToYourDirectoriesVC")
+//                    print("- token didSet goToAdminFlag: False --> goToYourDirectoriesVC")
                     performSegue(withIdentifier: "goToYourDirectoriesVC", sender: self)
                 }
             }
@@ -101,6 +101,11 @@ class LoginVC: UIViewController, LoginVCDelegate{
                 print(error)
             }
         })
+        if ProcessInfo.processInfo.hostName == "nicks-mac-mini.local" || ProcessInfo.processInfo.hostName == "localhost"
+        {
+            txtEmail.text="nrodrig1@gmail.com"
+            txtPassword.text = "test"
+        }
     }
 
     
@@ -130,7 +135,10 @@ class LoginVC: UIViewController, LoginVCDelegate{
         imgVwIconNoName.translatesAutoresizingMaskIntoConstraints = false
         imgVwIconNoName.accessibilityIdentifier = "imgVwIconNoName"
         vwVCTopTitle.addSubview(imgVwIconNoName)
-        imgVwIconNoName.topAnchor.constraint(equalTo: vwVCTopTitle.topAnchor).isActive=true
+        imgVwIconNoName.layer.cornerRadius = 10
+        imgVwIconNoName.clipsToBounds = true
+
+        imgVwIconNoName.topAnchor.constraint(equalTo:vwVCTopTitle.topAnchor,constant: heightFromPct(percent: 1)).isActive=true
         imgVwIconNoName.leadingAnchor.constraint(equalTo: vwVCTopTitle.centerXAnchor, constant: widthFromPct(percent: -35) ).isActive = true
         
         lblHeaderTitle.text = "Photo Backer Upper"
@@ -272,7 +280,7 @@ class LoginVC: UIViewController, LoginVCDelegate{
             userStore.requestLoginUser(email: unwrapped_email, password: unwrapped_pw) { responseResultLogin in
                 switch responseResultLogin{
                 case let .success(user_obj):
-                    print("user_response: \(user_obj)")
+//                    print("user_response: \(user_obj)")
                     self.userStore.user.id = user_obj.id
                     self.userStore.user.token = user_obj.token
                     self.userStore.user.email = self.txtEmail.text

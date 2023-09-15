@@ -51,6 +51,11 @@ class RegisterVC: UIViewController {
         setup_lblTitle()
         setup_stckVwLoginContents()
         setup_btnRegister()
+        if ProcessInfo.processInfo.hostName == "nicks-mac-mini.local" || ProcessInfo.processInfo.hostName == "localhost"
+        {
+            txtEmail.text="nrodrig1@gmail.com"
+            txtPassword.text = "test"
+        }
     }
     
     func setup_vwVCTop(){

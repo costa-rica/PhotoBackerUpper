@@ -62,14 +62,15 @@ class PhotosDirectoryVC: UIViewController, PHPickerViewControllerDelegate {
         super.viewDidLoad()
         setup_vwVCTop()
         setup_btnPhotoDirectoryOptions()
-
+        print("-- PhotosDirecotryVC--")
+        print("---> requestStore.user_token: \(requestStore.user_token!)")
     }
     
-    override func viewDidLayoutSubviews() {
-        print("----- viewDidLayoutSubview -----")
-        print("vwVCTop size: \(vwVCTop.frame.size)")
-        print("stckVwDirectory.frame.size: \(stckVwDirectory.frame.size)")
-    }
+//    override func viewDidLayoutSubviews() {
+//        print("----- viewDidLayoutSubview -----")
+//        print("vwVCTop size: \(vwVCTop.frame.size)")
+//        print("stckVwDirectory.frame.size: \(stckVwDirectory.frame.size)")
+//    }
     private func setup_vwVCTop(){
         view.addSubview(vwVCTop)
         vwVCTop.backgroundColor = environmentColor(requestStore:requestStore)
@@ -198,6 +199,7 @@ class PhotosDirectoryVC: UIViewController, PHPickerViewControllerDelegate {
             sender.transform = .identity
         }, completion: nil)
         
+        
         spinner.translatesAutoresizingMaskIntoConstraints = false
         spinner.color = UIColor.white.withAlphaComponent(1.0) // Make spinner brighter
         spinner.transform = CGAffineTransform(scaleX: 2, y: 2)
@@ -207,6 +209,8 @@ class PhotosDirectoryVC: UIViewController, PHPickerViewControllerDelegate {
         spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive=true
         
         for  imageBackup in arryImageBackUp{
+            print("imageBackup: \(imageBackup.name)")
+//            print("imageBacukp: \(imageBackup.)")
             directoryStore.uploadImage(image:imageBackup.uiimage!, uiimageName: imageBackup.name, withParameters: ["directory_id":imageBackup.directory!.id]) { resultResponse in
                 switch resultResponse{
                 case .success(_)://dict ["message":String]

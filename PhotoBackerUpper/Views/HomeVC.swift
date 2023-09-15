@@ -54,8 +54,8 @@ class HomeVC: UIViewController {
         print("Documents Directory: ", FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last ?? "Not Found!")
         print("finished loading HomeVC")
         
-        let computerName = ProcessInfo.processInfo.hostName
-        print("Computer name: \(computerName)")
+//        let computerName = ProcessInfo.processInfo.hostName
+//        print("Computer name: \(computerName)")
         
 //        for family in UIFont.familyNames.sorted() {
 //            let names = UIFont.fontNames(forFamilyName: family)
@@ -63,10 +63,6 @@ class HomeVC: UIViewController {
 //        }
     }
     
-    override func viewDidLayoutSubviews() {
-        print("- viewDidLayoutSubviews")
-//        sizeOfStuff()
-    }
 
     func setup_vwVCTop(){
         view.addSubview(vwVCTop)
@@ -85,7 +81,7 @@ class HomeVC: UIViewController {
        vwVCTopTitle.accessibilityIdentifier = "vwVCTopTitle"
         vwVCTopTitle.backgroundColor = UIColor(named: "gray-500")
        vwVCTopTitle.translatesAutoresizingMaskIntoConstraints = false
-//       vwVCTopTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -safeAreaTopAdjustment).isActive = true
+
        vwVCTopTitle.topAnchor.constraint(equalTo: vwVCTop.bottomAnchor).isActive=true
        vwVCTopTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive=true
        vwVCTopTitle.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive=true
@@ -96,9 +92,12 @@ class HomeVC: UIViewController {
            vwVCTopTitle.heightAnchor.constraint(equalToConstant: imgVwIconNoName.image!.size.height + 10).isActive=true
         }
         imgVwIconNoName.translatesAutoresizingMaskIntoConstraints = false
-       vwVCTopTitle.addSubview(imgVwIconNoName)
         imgVwIconNoName.accessibilityIdentifier = "imgVwIconNoName"
-        imgVwIconNoName.topAnchor.constraint(equalTo:vwVCTopTitle.topAnchor).isActive=true
+       vwVCTopTitle.addSubview(imgVwIconNoName)
+        imgVwIconNoName.layer.cornerRadius = 10
+        imgVwIconNoName.clipsToBounds = true
+
+        imgVwIconNoName.topAnchor.constraint(equalTo:vwVCTopTitle.topAnchor,constant: heightFromPct(percent: 1)).isActive=true
         imgVwIconNoName.leadingAnchor.constraint(equalTo:vwVCTopTitle.centerXAnchor, constant: widthFromPct(percent: -35) ).isActive = true
         
         lblHeaderTitle.text = "Photo Backer Upper"
@@ -126,12 +125,11 @@ class HomeVC: UIViewController {
     func setup_btnToRegister(){
         btnToRegister.setTitle("Register", for: .normal)
         btnToRegister.titleLabel?.font = UIFont(name: "Rockwell_tu", size: 20)
-//        btnToRegister.backgroundColor = UIColor(named: "orangePrimary")
         btnToRegister.layer.cornerRadius = 10
-//        btnToRegister.translatesAutoresizingMaskIntoConstraints=false
-        btnToRegister.layer.borderColor = UIColor.gray.cgColor
+//        btnToRegister.layer.borderColor = UIColor.gray.cgColor
         btnToRegister.layer.cornerRadius = 10
         btnToRegister.layer.borderWidth = 2
+        btnToRegister.backgroundColor = UIColor.systemBlue
         stckVwHome.addArrangedSubview(btnToRegister)
         btnToRegister.sizeToFit()
         btnToRegister.heightAnchor.constraint(equalToConstant: btnToRegister.frame.size.height + 30).isActive=true
@@ -144,7 +142,7 @@ class HomeVC: UIViewController {
         btnToLogin.setTitle("Login", for: .normal)
         btnToLogin.titleLabel?.font = UIFont(name: "Rockwell_tu", size: 20)
         btnToLogin.setTitleColor(UIColor(named: "orangePrimary"), for: .normal)
-        btnToLogin.layer.borderColor = UIColor.gray.cgColor
+        btnToLogin.layer.borderColor = UIColor.systemBlue.cgColor
         btnToLogin.layer.cornerRadius = 10
         btnToLogin.layer.borderWidth = 2
 //        btnToLogin.translatesAutoresizingMaskIntoConstraints=false
@@ -159,8 +157,8 @@ class HomeVC: UIViewController {
     func setup_photoPermission(){
         btnPromptAccess.setTitle("App Photos Permissions", for: .normal)
         btnPromptAccess.layer.borderWidth = 2
-        btnPromptAccess.layer.borderColor = UIColor.blue.cgColor
-        btnPromptAccess.layer.cornerRadius = 20
+        btnPromptAccess.layer.borderColor = UIColor.systemGray.cgColor
+        btnPromptAccess.layer.cornerRadius = 10
         btnPromptAccess.addTarget(self, action: #selector(touchDownBtnPromptAccess), for: .touchDown)
         btnPromptAccess.addTarget(self, action: #selector(touchUpInsideBtnPromptAccess), for: .touchUpInside)
         stckVwHome.addArrangedSubview(btnPromptAccess)
@@ -173,13 +171,13 @@ class HomeVC: UIViewController {
         stckVwHome.addArrangedSubview(stckVwApi)
         
         
-        let lblApi = UILabel()
-        lblApi.text = "Which Api?:"
-        lblApi.translatesAutoresizingMaskIntoConstraints=false
-        stckVwApi.addArrangedSubview(lblApi)
-        lblApi.sizeToFit()
-        print("lblApi.frame.size: \(lblApi.frame.size)")
-        stckVwApi.heightAnchor.constraint(equalToConstant: lblApi.frame.size.height + 40).isActive=true
+//        let lblApi = UILabel()
+//        lblApi.text = "Which Api?:"
+//        lblApi.translatesAutoresizingMaskIntoConstraints=false
+//        stckVwApi.addArrangedSubview(lblApi)
+//        lblApi.sizeToFit()
+////        print("lblApi.frame.size: \(lblApi.frame.size)")
+//        stckVwApi.heightAnchor.constraint(equalToConstant: lblApi.frame.size.height + 40).isActive=true
 
         if ProcessInfo.processInfo.hostName == "nicks-mac-mini.local"{
             requestStore.apiBase = APIBase.local
@@ -189,17 +187,14 @@ class HomeVC: UIViewController {
             arryEnvironment.remove(at: 0)
         }
 
-        //            indexDict = ["http://127.0.0.1:5001/":0,Environment.dev.baseString:1,"https://api.tu-rincon.com/":2]
-//        let segmentedControl = UISegmentedControl(items: arrayEnvRawValues)
-        let segmentedControl = UISegmentedControl(items: arryEnvironment.map { $0.rawValue })
-        segmentedControl.addTarget(self, action: #selector(segmentedControlValueChanged), for: .valueChanged)
-        
-        // Set initial selected segment
-//        segmentedControl.selectedSegmentIndex = arryEnvironment[urlStore.baseString] ?? 0
-        segmentedControl.selectedSegmentIndex = arryEnvironment.firstIndex(where: { $0.urlString == requestStore.apiBase.urlString }) ?? 0
-        stckVwApi.translatesAutoresizingMaskIntoConstraints = false
-        stckVwApi.addArrangedSubview(segmentedControl)
-        print("APIBase is set to: \(requestStore.apiBase.rawValue)")
+//        let segmentedControl = UISegmentedControl(items: arryEnvironment.map { $0.rawValue })
+//        segmentedControl.addTarget(self, action: #selector(segmentedControlValueChanged), for: .valueChanged)
+//        
+//        // Set initial selected segment
+//        segmentedControl.selectedSegmentIndex = arryEnvironment.firstIndex(where: { $0.urlString == requestStore.apiBase.urlString }) ?? 0
+//        stckVwApi.translatesAutoresizingMaskIntoConstraints = false
+//        stckVwApi.addArrangedSubview(segmentedControl)
+//        print("APIBase is set to: \(requestStore.apiBase.rawValue)")
         vwVCTop.backgroundColor = environmentColor(requestStore:requestStore)
 
         lblCheckApi = UILabel()
@@ -213,8 +208,8 @@ class HomeVC: UIViewController {
         btnCheckApi.setTitle("Check API Status", for: .normal)
         stckVwApi.addArrangedSubview(btnCheckApi)
         btnCheckApi.layer.borderWidth = 2
-        btnCheckApi.layer.borderColor = UIColor.blue.cgColor
-        btnCheckApi.layer.cornerRadius = 20
+        btnCheckApi.layer.borderColor = UIColor.systemGray.cgColor
+        btnCheckApi.layer.cornerRadius = 10
         btnCheckApi.addTarget(self, action: #selector(touchDownBtnCheckApi), for: .touchDown)
         btnCheckApi.addTarget(self, action: #selector(touchUpInsideBtnCheckApi), for: .touchUpInside)
 
@@ -312,22 +307,11 @@ class HomeVC: UIViewController {
     @objc private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         let selectedEnvironment = arryEnvironment[sender.selectedSegmentIndex]
         requestStore.apiBase = selectedEnvironment
-        print("API base changed by user to: \(requestStore.apiBase.urlString)")
+//        print("API base changed by user to: \(requestStore.apiBase.urlString)")
         vwVCTop.backgroundColor = environmentColor(requestStore:requestStore)
     }
-    
-    @objc func goToDevWebsite() {
-        guard let url = URL(string: "https://dev.tu-rincon.com") else { return }
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
-    }
-    
-    func sizeOfStuff(){
-        print("------")
-        print("stckVwHome height: \(stckVwHome.frame.size.height)")
-        print("stckVwApi height: \(stckVwApi.frame.size.height)")
-        print("lblCheckApi height: \(lblCheckApi.frame.size.height)")
-//        print(lblCheckApi.text)
-    }
+
+
     
     
     func alertHomeVC(alertMessage:String, adjPermissions:Bool) {
